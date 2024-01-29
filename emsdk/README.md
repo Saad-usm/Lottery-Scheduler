@@ -242,3 +242,12 @@ Emscripten SDK releases are no longer packaged or maintained for 32-bit systems.
 If you want to run Emscripten on a 32-bit system, you can try manually building
 the compiler. Follow the steps in the above section "Building an Emscripten tag
 or branch from source" to get started.
+
+
+
+#### REAL INSTRUCTIONS
+to compile, run this for c++:
+em++ -o .\wasm\hello.js -lembind -s SINGLE_FILE=1 -s MODULARIZE=1 -s EXPORT_ES6=1 -s ENVIRONMENT=web .\wasm\hello.cpp (windows)
+em++ -o ./wasm/hello.js -lembind -s SINGLE_FILE=1 -s MODULARIZE=1 -s EXPORT_ES6=1 -s ENVIRONMENT=web ./wasm/hello.cpp (linux/macOS)
+
+npm start to run the react project, but you should cd into react-wasm's directory.
