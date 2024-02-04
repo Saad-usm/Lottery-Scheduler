@@ -1,30 +1,28 @@
-#include <emscripten/bind.h>
 #include <vector>
 #include <random>
 #include <string>
-#include <sstream>
+#include <sstream> // For string stream
+#include <iostream>
 
-using namespace emscripten;
-
+// Definition of the Task struct.
 struct Task {
     int runtime;
     int tickets;
-    Task(int runtime, int tickets) : runtime(runtime), tickets(tickets) {}
 };
 
+// Simulation function declaration
 std::vector<std::string> runLotteryScheduler(
-    int numberOfTasks,
+    const std::vector<Task>& tasksInput,
     int executionSpeed,
-    int schedulingQuantum,
-    const val &tasksVal
-) {
-    std::vector<Task> tasks;
+    int schedulingQuantum);
 
-    for (unsigned int i = 0; i < numberOfTasks; ++i) {
-        val taskVal = tasksVal[i];
-        tasks.push_back(Task(taskVal["runtime"].as<int>(), taskVal["tickets"].as<int>()));
-    }
-
+// Simulation function implementation
+std::vector<std::string> runLotteryScheduler(
+    const std::vector<Task>& tasksInput,
+    int executionSpeed,
+    int schedulingQuantum) {
+    
+    std::vector<Task> tasks = tasksInput; // Copy tasks to modify runtime
     std::vector<std::string> results;
     int totalTickets = 0;
     for (const auto& task : tasks) {
@@ -43,8 +41,8 @@ std::vector<std::string> runLotteryScheduler(
             ticketCount += tasks[i].tickets;
             if (selectedTicket <= ticketCount && tasks[i].runtime > 0) {
                 std::stringstream ss;
-                ss << "Scheduling Quantum: " << schedulingQuantum << "s, Selected Ticket: " 
-                   << selectedTicket << ", Running Task: " << i + 1;
+                ss << "Scheduling Quantum: " << schedulingQuantum << "s, Selected Ticket: " << selectedTicket
+                   << ", Running Task: " << i + 1;
                 results.push_back(ss.str());
 
                 tasks[i].runtime -= schedulingQuantum;
@@ -62,13 +60,19 @@ std::vector<std::string> runLotteryScheduler(
     return results;
 }
 
-// Binding code to expose the runLotteryScheduler function and the Task struct to JavaScript
-EMSCRIPTEN_BINDINGS(my_module) {
-    class_<Task>("Task")
-        .constructor<int, int>()
-        .property("runtime", &Task::runtime)
-        .property("tickets", &Task::tickets);
+int main() {
+    std::vector<Task> tasksInput = {
+    {10, 5}, // Task 1: runtime 10s, 5 tickets
+    {15, 3}, // Task 2: runtime 15s, 3 tickets
+    {20, 40}  // Task 3: runtime 20s, 2 tickets
+};
 
-    register_vector<std::string>("VectorString");
-    function("runLotteryScheduler", &runLotteryScheduler, allow_raw_pointers());
+    int executionSpeed = 1; // Ignored in this static example
+    int schedulingQuantum = 2;
+
+    auto simulationResults = runLotteryScheduler(tasksInput, executionSpeed, schedulingQuantum);
+
+    for (const auto& result : simulationResults) {
+        std::cout << result << std::endl;
+    }
 }

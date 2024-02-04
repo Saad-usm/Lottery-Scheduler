@@ -338,7 +338,7 @@ module.exports = function (webpackEnv) {
       fallback: {
         path: false, // Exclude path module
         fs: false, // Exclude fs module
-      },
+      }, 
     },
     module: {
       strictExportPresence: true,
