@@ -4,27 +4,25 @@ import * as d3 from 'd3';
 
 const TaskCompletionGraph = ({ tasks, results }) => {
   const d3Container = useRef(null);
+  const margin = { top: 10, right: 30, bottom: 30, left: 60 };
+  const width = 460 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
 
   useEffect(() => {
     if (tasks.length && results.length && d3Container.current) {
-      // Clear the container each time this effect runs
-      d3.select(d3Container.current).selectAll('*').remove();
-
-      const margin = { top: 10, right: 30, bottom: 30, left: 60 },
-            width = 460 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
-
-      // Append the svg object to the container div
-      const svg = d3.select(d3Container.current)
-        .append('svg')
+      let svg = d3.select(d3Container.current).select('svg');
+      if (svg.empty()) {
+        svg = d3.select(d3Container.current)
+          .append('svg')
           .attr('width', width + margin.left + margin.right)
           .attr('height', height + margin.top + margin.bottom)
-        .append('g')
+          .append('g')
           .attr('transform', `translate(${margin.left},${margin.top})`);
+      }
 
       // Create scales
       const xScale = d3.scaleLinear()
-        .domain([0, d3.max(results, (_, i) => i)])   // Domain from 0 to number of results
+        .domain([0, results.length - 1])   // Domain from 0 to the last index of results
         .range([0, width]);
       
       const yScale = d3.scaleLinear()
@@ -43,50 +41,67 @@ const TaskCompletionGraph = ({ tasks, results }) => {
       // Colors for the tasks
       const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-       // Compute the percentage of task completion over time
-    const taskCompletionData = tasks.map((task, taskIndex) => {
-        return results.map((_, resultIndex) => {
-          // Assuming that results is an array of the total runtime completed for each task at each tick
-          const completion = (results[resultIndex][taskIndex] / task.runtime) * 100;
-          return { time: resultIndex, completion: Math.min(completion, 100) }; // Cap at 100%
-        });
+      // Compute the percentage of task completion over time
+      tasks.forEach((task, taskIndex) => {
+        // Assuming each entry in `results` is an array with the task's current completion
+        const taskData = results.map((resultTick, i) => ({
+          time: i,
+          completion: (resultTick[taskIndex] / task.runtime) * 100,
+        })).filter(d => !isNaN(d.completion));  // Filter out NaN values
+
+        // Create the line generator
+        const line = d3.line()
+          .x(d => xScale(d.time))
+          .y(d => yScale(d.completion));
+
+        // Update the line
+        svg.selectAll(`.line-task-${taskIndex}`)
+          .data([taskData])
+          .join(
+            enter => enter
+              .append('path')
+              .attr('class', `line line-task-${taskIndex}`)
+              .attr('d', line)
+              .attr('fill', 'none')
+              .attr('stroke', colorScale(taskIndex))
+              .attr('stroke-width', 2),
+            update => update
+              .attr('d', line),
+            exit => exit.remove()
+          );
       });
 
-      // Draw lines
-taskCompletionData.forEach((data, index) => {
-    const line = d3.line()
-      .x(d => xScale(d.time))
-      .y(d => yScale(d.completion));
-  
-    svg.append('path')
-      .datum(data)
-      .attr('fill', 'none')
-      .attr('stroke', colorScale(index))
-      .attr('stroke-width', 2)
-      .attr('d', line);
-  });
+      // Add legend
+      const legendContainer = svg.selectAll('.legend-container').data([null]);
+      const legendContainerEnter = legendContainer.enter().append('g').attr('class', 'legend-container');
 
-      // Legend
-      const legend = svg.selectAll('.legend')
-        .data(tasks)
-        .enter().append('g')
+      const legend = legendContainerEnter.merge(legendContainer)
+        .selectAll('.legend')
+        .data(tasks);
+
+      const legendEnter = legend.enter().append('g')
         .attr('class', 'legend')
         .attr('transform', (d, i) => `translate(0,${i * 20})`);
 
-      legend.append('rect')
+      legendEnter.append('rect')
         .attr('x', width - 18)
         .attr('width', 18)
         .attr('height', 18)
+        .merge(legend.select('rect'))
         .style('fill', (d, i) => colorScale(i));
 
-      legend.append('text')
+      legendEnter.append('text')
         .attr('x', width - 24)
         .attr('y', 9)
         .attr('dy', '.35em')
         .style('text-anchor', 'end')
-        .text((d, i) => `Task ${i+1}`);
+        .merge(legend.select('text'))
+        .text((d, i) => `Task ${i + 1}`);
+
+      legend.exit().remove();
+
     }
-  }, [tasks, results]);
+  }, [tasks, results, height, width, margin]);
 
   return (
     <div className="TaskCompletionGraph" ref={d3Container} />

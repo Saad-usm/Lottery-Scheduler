@@ -126,9 +126,9 @@ function App() {
               ))}
             </div>
           </div>
-          <div className="TaskCompletionGraph-container">
+          {/* <div className="TaskCompletionGraph-container">
             <TaskCompletionGraph tasks={tasks} results={displayedResults} />
-          </div>
+          </div> */}
         </div>
       </header>
     </div>

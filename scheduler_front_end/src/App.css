@@ -144,25 +144,3 @@ button.stop:hover {
   border-radius: 4px;
 }
 
-.App-content {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
-}
-
-.Task-manager {
-  width: 30%; /* Adjust the width as needed */
-  /* Other styles */
-}
-
-.Scheduler-output {
-  width: 70%; /* Adjust the width as needed */
-  /* Other styles */
-}
-
-.TaskCompletionGraph {
-  height: 100%; /* Set height to fill the container */
-  /* Add any additional styles you need for the graph container */
-}
