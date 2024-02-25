@@ -100,8 +100,9 @@ label {
 }
 
 .Scheduler-output div {
+  font-size: small;
   margin-top: 10px;
-  background-color: #e21a41; /* Even lighter violet for output divs */
+  background-color: #161618; /* Even lighter violet for output divs */
   padding: 10px;
   border-radius: 4px;
   color: white;
@@ -145,3 +146,21 @@ button:hover, button.pause:hover, button.stop:hover {
   background-color: #e21a41; /* White background on hover */
   color: white; /* Black text on hover */
 }
+
+.Results-container h3 {
+  font-size: large; /* Adjust this value as needed to make the text larger */
+  color: white; /* Ensuring the heading is visible against any background */
+  margin-bottom: 10px; /* Keeps some space between the heading and the first result */
+}
+
+.Result-box {
+  font-size: smaller; /* Makes the text of each result smaller */
+  border: 2px solid white; /* Adds a white border around each result */
+  background-color: #161618; /* Keeping the background consistent with your design */
+  color: white; /* Ensuring text is visible */
+  padding: 10px;
+  margin-bottom: 10px; /* Adds space between result boxes */
+  border-radius: 4px; /* Optional: adds rounded corners */
+  border: 2px solid;
+}
+

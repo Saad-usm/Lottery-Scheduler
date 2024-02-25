@@ -2,7 +2,7 @@ import React from 'react';
 
 const TaskManager = ({ tasks, handleTaskChange, handleAddTask, handleRemoveTask }) => (
   // Wrap the content in a div with a fixed height and overflow-y set to auto
-  <div style={{ height: '500px', overflowY: 'auto' }}>
+  <div style={{ height: '500px', overflowY: 'auto', minWidth: '400px' }}>
     <div className="Task-manager" style={{ minWidth: '300px' }}>
       {tasks.map((task, index) => (
         <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>

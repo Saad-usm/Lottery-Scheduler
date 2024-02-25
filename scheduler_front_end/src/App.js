@@ -191,6 +191,7 @@ function App() {
             displayedResults={displayedResults} 
             setDisplayedResults={setDisplayedResults} 
             results={results} 
+            tasks={tasks}
           />
           <div style={{ width: '600px', height: '400px' }}>
             <Line data={data} options={options}/>
