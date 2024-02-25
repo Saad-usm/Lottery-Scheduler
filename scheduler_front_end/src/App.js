@@ -31,6 +31,7 @@ function App() {
   // State for tracking the percentage of completion of the simulation
   const [completionPercentages, setCompletionPercentages] = useState(tasks.map(() => []));
 
+  const [cpuColor, setCpuColor] = useState('black'); // State to manage the CPU image color
 
 
   // Effect hook to initialize the scheduler module on component mount
@@ -82,25 +83,6 @@ function App() {
     }
   }, [displayedResults, tasks, schedulingQuantum]);
   
-  
-  
-
-
-  const updateSimulationProgress = () => {
-    // Simulated progress update for demonstration; customize based on your scheduler's logic
-    setCompletionPercentages(prevPercentages =>
-      prevPercentages.map((percentages, index) => {
-        const nextValue = Math.min(percentages.length + (100 / tasks.length), 100);
-        return [...percentages, nextValue];
-      })
-    );
-
-    // Stop simulation when all tasks reach 100% (simplified check)
-    if (completionPercentages.every(percentages => percentages.at(-1) === 100)) {
-      setSimulationStatus('stopped');
-    }
-  };
-
   // Function to start the scheduler simulation
   const handleRunSchedulerClick = () => {
     if (scheduler && simulationStatus !== 'running') {
@@ -111,7 +93,6 @@ function App() {
         resultArray.push(schedulerResultHandle.get(i));
       }
       setResults(resultArray);
-      console.log(resultArray);
       setDisplayedResults([]);
       setSimulationStatus('running');
     }
@@ -150,7 +131,6 @@ function App() {
     setSimulationStatus('stopped');
     setDisplayedResults([]);
     setResults([]);
-    // setPercentageCompletion([]);
   };
 
   // Adjust the data for the chart to map each task to a dataset
@@ -179,11 +159,27 @@ function App() {
     setTasks(tasks.filter((_, index) => index !== indexToRemove));
   };
 
+  useEffect(() => {
+    let colorChangeInterval;
+    if (simulationStatus === 'running') {
+      // Change the CPU image color every 500ms
+      colorChangeInterval = setInterval(() => {
+        setCpuColor((prevColor) => (prevColor === 'black' ? 'red' : 'black'));
+      }, 500);
+    } else {
+      clearInterval(colorChangeInterval);
+      setCpuColor('black'); // Reset color to default when the simulation is not running
+    }
+
+    return () => clearInterval(colorChangeInterval);
+  }, [simulationStatus]);
+
   // JSX to render the UI components
   return (
     <div className="App">
       <header className="App-header">
-        <h2>Lottery Scheduler Simulation</h2>
+      <img src="cpu-clipart.png" width="100" alt="CPU" style={{ filter: `hue-rotate(${cpuColor === 'red' ? '0deg' : '90deg'})`, padding: "20px" }} />
+        <h3 style={{ marginTop: '0', marginBottom: '20px' }}>Implementation and visualization of a CPU scheduler as described by Waldspurger and Weihl <a href="https://www.usenix.org/legacy/publications/library/proceedings/osdi/full_papers/waldspurger.pdf" target="_blank" rel="noopener noreferrer">here</a>. Based on a lottery algorithm written in C++ and compiled to Wasm.</h3>
         <div className="App-content" style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center', gap: '20px' }}>
         <TaskManager tasks={tasks} handleTaskChange={handleTaskChange} handleAddTask={handleAddTask} handleRemoveTask={handleRemoveTask} />
         <SchedulerControls 

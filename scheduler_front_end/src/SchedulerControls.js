@@ -13,7 +13,7 @@ const SchedulerControls = ({ schedulingQuantum, setSchedulingQuantum, simulation
         } else {
           clearInterval(intervalId);
         }
-      }, 100); // Adjust the interval as needed
+      }, 500); // Adjust the interval as needed
     }
 
     return () => clearInterval(intervalId);
@@ -21,7 +21,7 @@ const SchedulerControls = ({ schedulingQuantum, setSchedulingQuantum, simulation
 
   return (
     <div className="Scheduler-output" style={{ minWidth: '300px' }}>
-            <label>
+            <label style={{color: '#FFFFFF'}}>
               Scheduling Quantum:
               <input 
                 type="number" 
