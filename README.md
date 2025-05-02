@@ -1,6 +1,6 @@
 Lottery Scheduler Implementation based on https://www.usenix.org/legacy/publications/library/proceedings/osdi/full_papers/waldspurger.pdf
 
-LIVE DEMO: https://www.lotteryscheduler.me
+LIVE DEMO: https://main.dvv0x1fkhdhrk.amplifyapp.com
 
 Command to compile: 
 
